@@ -52,33 +52,37 @@ export default function Surah() {
         </div>
       </div>
         <div className="flex items-center justify-between w-full py-4 md:mx-auto md:w-2/3">
-          <NavLink to={`/surah/${dataSurah?.data.suratSebelumnya.nomor}`}>
-            <Button variant="ghost" aria-label="prev-button" className="sm:p-7">
-              <ArrowLeft />
-              <div>
-                <p className="pl-2">QS. {dataSurah?.data.suratSebelumnya.nomor}</p>
-                <p className="pl-2">{dataSurah?.data.suratSebelumnya.namaLatin}</p>
-              </div>
-            </Button>
-          </NavLink>
-          <NavLink to={`/surah/${dataSurah?.data.suratSelanjutnya.nomor}`}>
-            <Button variant="ghost" aria-label="next-button" className="sm:p-7">
-              <div>
-                <p className="pr-2">QS. {dataSurah?.data.suratSelanjutnya.nomor}</p>
-                <p className="pr-2">{dataSurah?.data.suratSelanjutnya.namaLatin}</p>
-              </div>
-              <ArrowRight />
-            </Button>
-          </NavLink>
+          {dataSurah?.data?.suratSebelumnya ?
+            <NavLink to={`/surah/${dataSurah?.data.suratSebelumnya.nomor}`}>
+              <Button variant="ghost" aria-label="prev-button" className="sm:p-7">
+                <ArrowLeft />
+                <div>
+                  <p className="pl-2">QS. {dataSurah?.data.suratSebelumnya.nomor}</p>
+                  <p className="pl-2">{dataSurah?.data.suratSebelumnya.namaLatin}</p>
+                </div>
+              </Button>
+            </NavLink> : <div></div>}
+          
+          {dataSurah?.data?.suratSelanjutnya ?
+            <NavLink to={`/surah/${dataSurah?.data.suratSelanjutnya.nomor}`}>
+              <Button variant="ghost" aria-label="next-button" className="sm:p-7">
+                <div>
+                  <p className="pr-2">QS. {dataSurah?.data.suratSelanjutnya.nomor}</p>
+                  <p className="pr-2">{dataSurah?.data.suratSelanjutnya.namaLatin}</p>
+                </div>
+                <ArrowRight />
+              </Button>
+            </NavLink> : <div></div>}
         </div>
+
       {ayat.map(ayat => (
-        <Card key={ayat.nomorAyat} className="py-2 md:w-2/3 md:mx-auto scroll-ml-6" id={`${ayat.nomorAyat}`}>
+        <Card key={ayat.nomorAyat} className="py-2 md:w-2/3 md:mx-auto scroll-ml-6 md:px-5 px-2" id={`${ayat.nomorAyat}`}>
         <CardHeader className="gap-4">
           <div className="flex justify-between gap-2">
             <h1 className="text-xl">{ayat.nomorAyat}.</h1>
             <CardTitle className="text-3xl md:text-4xl text-right font-mono font-bold !leading-[4rem]">{ayat?.teksArab}</CardTitle>
           </div>
-          <div className="flex justify-end py-4">
+          <div className="flex justify-end py-3">
             <ReactAudioPlayer
               src={ayat.audio["05"]}
               controls
