@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DataSurahType } from "@/types/SurahTypes";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import ReactAudioPlayer from "react-audio-player";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface SurahNav {
@@ -21,6 +20,8 @@ interface SurahNav {
 export default function Surah() {
   const [dataSurah, setDataSurah] = useState<DataSurahType | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [fullPlay, setFullPlay] = useState<boolean>(false)
+  const [perAyatPlay, setPerAyatPlay] = useState<boolean>(false)
   
   const params = useParams<string>()
 
@@ -33,14 +34,13 @@ export default function Surah() {
       } catch (error) {
         console.log(error);
       } finally {
-        setTimeout(() => {
-          setIsLoading(false)
-        }, 5000)
+        setIsLoading(false)
       }
     }
     
     getSurah()
   },[params])
+
 
   const SurahNavigationButton = ({ direction, data }: SurahNav) => {
     if (data) {
@@ -60,19 +60,35 @@ export default function Surah() {
     return <div></div>;
   }
 
+  const handlePlayFull = () => {
+    setFullPlay(true)
+  }
+
+  const handlePauseFull = () => {
+    setFullPlay(false)
+  }
+
+  const handlePerAyatPlay = () => {
+    setPerAyatPlay(true)
+  }
+
+  const handlePerAyatPause = () => {
+    setPerAyatPlay(false)
+  }
+
   return (
     <>
       {isLoading ? 
-          <>
-            <Skeleton className="mt-6 w-9 h-9"/>
-            <div className="flex flex-col items-center justify-center w-full gap-2 py-4 md:mx-auto md:w-2/3">
-              <Skeleton className="w-1/3 h-10 mx-auto"/>
-              <Skeleton className="h-[22px] w-28 "/>
-              <Skeleton className="h-[22px] w-24 "/>
-              <Skeleton className="h-[22px] w-40 "/>
-              <Skeleton className="w-1/3 h-12 mt-4 rounded-full"/>
-            </div>
-          </>
+        <>
+          <Skeleton className="mt-6 w-9 h-9"/>
+          <div className="flex flex-col items-center justify-center w-full gap-2 py-4 md:mx-auto md:w-2/3">
+            <Skeleton className="w-1/3 h-10 mx-auto"/>
+            <Skeleton className="h-[22px] w-28 "/>
+            <Skeleton className="h-[22px] w-24 "/>
+            <Skeleton className="h-[22px] w-40 "/>
+            <Skeleton className="w-11/12 h-12 mt-4 rounded-full sm:w-1/3"/>
+          </div>
+        </>
          : <div className="grid grid-cols-1 gap-4 mb-8">
         <NavLink to="/" aria-label="link">
           <Button size="icon" variant="secondary" className="mt-6" aria-label="back-button">
@@ -86,7 +102,13 @@ export default function Surah() {
               <h2>{`(${dataSurah?.data.arti})`}</h2>
               <h2>Surah ke - {dataSurah?.data.nomor}</h2>
               <h2>{dataSurah?.data.jumlahAyat} Ayat 🔹 {dataSurah?.data.tempatTurun} 🔹 <span className="font-mono">{dataSurah?.data.nama}</span></h2>
-              <ReactAudioPlayer src={dataSurah?.data.audioFull["05"]} controls className="flex mt-4"></ReactAudioPlayer>
+              <audio
+                src={dataSurah?.data.audioFull["05"]} 
+                controls={!perAyatPlay}
+                onPlay={handlePlayFull}
+                onPause={handlePauseFull}
+                className="flex mt-4">
+              </audio>
             </section>
           </div>
         </div>
@@ -99,15 +121,21 @@ export default function Surah() {
           <CardHeader className="gap-4">
             <div className="flex justify-between gap-2">
               <h1 className="text-xl">{ayat.nomorAyat}.</h1>
-              <CardTitle className="text-3xl md:text-4xl text-right font-mono font-bold !leading-[4rem]">{ayat?.teksArab}</CardTitle>
+              <CardTitle className="text-3xl md:text-4xl text-right font-mono font-bold !leading-[4rem]">
+                {ayat?.teksArab}
+              </CardTitle>
             </div>
             <div className="flex justify-end py-3">
-              <ReactAudioPlayer
+              <audio
                 src={ayat.audio["05"]}
-                controls
+                controls={!fullPlay}
+                onPlay={handlePerAyatPlay}
+                onPause={handlePerAyatPause}
               />
             </div>
-            <CardDescription className="text-xl font-semibold text-gray-900 dark:text-white">{ayat?.teksLatin}</CardDescription>
+            <CardDescription className="text-xl font-semibold text-gray-900 dark:text-white">
+              {ayat?.teksLatin}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <h2 className="text-lg">{ayat.teksIndonesia}</h2>

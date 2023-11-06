@@ -60,8 +60,11 @@ const Quran = () => {
           surahs.map(surah => (
             <Card key={surah.nomor}>
             <CardHeader>
-              <CardTitle className="text-lg"><span className="font-bold">{surah.nomor}. {surah?.namaLatin}</span> {`(${surah.arti})`}</CardTitle>
-              <CardDescription className="font-mono text-3xl font-semibold text-gray-900 dark:text-white text-end">{surah?.nama}</CardDescription>
+              <CardTitle className="text-lg">
+                <span className="font-bold">{surah.nomor}. {surah?.namaLatin}</span> {`(${surah.arti})`}
+              </CardTitle>
+              <CardDescription className="font-mono text-3xl font-semibold text-gray-900 dark:text-white text-end">{surah?.nama}
+              </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
               <NavLink to={`surah/${surah.nomor}`}>
