@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { NavLink } from "react-router-dom"
 import { BookOpenText } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Badge } from "@/components/ui/badge"
 
 export const API_URL_SURAHS = "https://equran.id/api/v2/surat"
 const Quran = () => {
@@ -32,11 +33,11 @@ const Quran = () => {
 
     for (let i = 0; i < count; i++) {
       skeletonCards.push(
-        <div className="bg-primary/10 animate-pulse w-full h-fit rounded-xl flex flex-col" key={i}>
-          <Skeleton className="h-6 w-1/2 mt-6 ml-6"/>
-          <Skeleton className="h-10 w-1/3 mt-3 mr-6 self-end"/>
-          <Skeleton className="h-7 w-[127px] my-6 ml-6 mx-auto"/>
-          <Skeleton className="h-[22px] w-[105px] mt-3 ml-6 mb-6"/>
+        <div className="flex flex-col w-full bg-primary/10 animate-pulse h-fit rounded-xl" key={i}>
+          <Skeleton className="w-1/2 h-6 mt-6 ml-6"/>
+          <Skeleton className="self-end w-1/3 h-10 mt-3 mr-6"/>
+          <Skeleton className="h-8 w-[127px] mb-6 mt-4 ml-6 mx-auto"/>
+          <Skeleton className="h-[22px] w-[105px] ml-6 mb-6"/>
         </div>
       )
     }
@@ -46,29 +47,33 @@ const Quran = () => {
   
   return (
     <>
-      <h1 className="text-7xl text-center py-8">Noble Qur'an</h1>
-        <main className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 my-8">
-          {isLoading ? 
-          <>
-            {renderSkeleton(12)}            
-          </> : 
-            surahs.map(surah => (
-              <Card key={surah.nomor}>
-              <CardHeader>
-                <CardTitle className="text-lg"><span className="font-bold">{surah.nomor}. {surah?.namaLatin}</span> {`(${surah.arti})`}</CardTitle>
-                <CardDescription className="text-3xl text-gray-900 font-semibold dark:text-white font-mono text-end">{surah?.nama}</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center">
-                <NavLink to={`surah/${surah.nomor}`}>
-                  <Button size="sm" className="text-base">Baca Surah <BookOpenText className="w-5 h-5 ml-1" /></Button>
-                </NavLink>
-              </CardContent>
-              <CardFooter className="font-semibold">
-                {surah?.jumlahAyat} Ayat | {surah?.tempatTurun}
-              </CardFooter>
-            </Card>
-            ))}
-        </main>
+      <div className="flex justify-center mt-5">
+        <Badge className="text-lg">#FreePalestine</Badge>
+      </div>
+      <h1 className="py-12 text-center select-none text-7xl">The Noble Qur'an</h1>
+      <h2 className="mx-auto text-center text-2xl mt-2 font-semibold border-b-2 max-w-[13rem] border-b-black dark:border-b-slate-100">List Of Surah</h2>
+      <main className="grid grid-cols-1 gap-5 my-5 lg:grid-cols-3 md:grid-cols-2">
+        {isLoading ? 
+        <>
+          {renderSkeleton(12)}            
+        </> : 
+          surahs.map(surah => (
+            <Card key={surah.nomor}>
+            <CardHeader>
+              <CardTitle className="text-lg"><span className="font-bold">{surah.nomor}. {surah?.namaLatin}</span> {`(${surah.arti})`}</CardTitle>
+              <CardDescription className="font-mono text-3xl font-semibold text-gray-900 dark:text-white text-end">{surah?.nama}</CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <NavLink to={`surah/${surah.nomor}`}>
+                <Button size="sm" className="text-base">Baca Surah <BookOpenText className="w-5 h-5 ml-1" /></Button>
+              </NavLink>
+            </CardContent>
+            <CardFooter className="font-semibold">
+              {surah?.jumlahAyat} Ayat | {surah?.tempatTurun}
+            </CardFooter>
+          </Card>
+          ))}
+      </main>
     </>
   )
 }
