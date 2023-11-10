@@ -13,7 +13,7 @@ const Quran = () => {
   const [surahs, setSurahs] = useState<SurahType>([])
   const storedBookmarks = localStorage.getItem("bookmark");
   const initialBookmarked: AyatType[] = storedBookmarks ? JSON.parse(storedBookmarks) : [];
-  const [bookmarked, setBookmarked] = useState<AyatType[]>(initialBookmarked);
+  const bookmarked: AyatType[] = initialBookmarked;
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const {toast} = useToast()
 
