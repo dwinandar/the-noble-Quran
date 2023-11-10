@@ -11,7 +11,9 @@ import { useToast } from "@/components/ui/use-toast"
 export const API_URL_SURAHS = "https://equran.id/api/v2/surat"
 const Quran = () => {
   const [surahs, setSurahs] = useState<SurahType>([])
-  const [bookmarked] = useState<AyatType[]>(JSON.parse(localStorage.getItem('bookmark')) || []);
+  const storedBookmarks = localStorage.getItem("bookmark");
+  const initialBookmarked: AyatType[] = storedBookmarks ? JSON.parse(storedBookmarks) : [];
+  const [bookmarked, setBookmarked] = useState<AyatType[]>(initialBookmarked);
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const {toast} = useToast()
 

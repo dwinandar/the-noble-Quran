@@ -9,7 +9,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function Surah() {
-  const [bookmarkedAyat, setBookmarkedAyat] = useState<AyatType[]>(JSON.parse(localStorage.getItem('bookmark')) || []);
+  const storedBookmarks = localStorage.getItem('bookmark');
+  const initialBookmarked: AyatType[] = storedBookmarks ? JSON.parse(storedBookmarks) : [];
+  const [bookmarkedAyat, setBookmarkedAyat] = useState<AyatType[]>(initialBookmarked);
   const [dataSurah, setDataSurah] = useState<DataSurahType | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [fullPlay, setFullPlay] = useState<boolean>(false)
@@ -79,17 +81,19 @@ export default function Surah() {
 
   useEffect(() => {
     const scrollIntoAyat = () => {
-    const idAyat = bookmarkedAyat[0]?.nomorAyat;
-    const elementidAyat = document.getElementById(`${idAyat}`);
+      if (bookmarkedAyat.length > 0 && dataSurah && dataSurah.data) {
+        const idAyat = bookmarkedAyat[0].nomorAyat;
+        const elementAyat = document.getElementById(`${idAyat}`);
+        
+        if (elementAyat && dataSurah && dataSurah.data && typeof bookmarkedAyat[1] === 'number' && dataSurah.data.nomor === bookmarkedAyat[1]) {
+          elementAyat.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    };
+  
+    scrollIntoAyat();
 
-    elementidAyat?.scrollIntoView({ behavior: 'smooth' });
-  }
-
-  if(dataSurah?.data.nomor === bookmarkedAyat[1]) {
-    scrollIntoAyat()
-  }
-
-  }, [bookmarkedAyat, dataSurah?.data.nomor]);
+  }, [bookmarkedAyat, dataSurah]);
 
   return (
     <>
