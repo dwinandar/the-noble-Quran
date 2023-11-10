@@ -1,16 +1,19 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useEffect, useState } from "react"
-import { SurahType } from "@/types/SurahTypes"
+import { AyatType, SurahType } from "@/types/SurahTypes"
 import { Button } from "@/components/ui/button"
 import { NavLink } from "react-router-dom"
-import { BookOpenText } from "lucide-react"
+import { ArrowDownRight, BookOpenText } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
+import { useToast } from "@/components/ui/use-toast"
 
 export const API_URL_SURAHS = "https://equran.id/api/v2/surat"
 const Quran = () => {
   const [surahs, setSurahs] = useState<SurahType>([])
+  const [bookmarked] = useState<AyatType[]>(JSON.parse(localStorage.getItem('bookmark')) || []);
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const {toast} = useToast()
 
   useEffect(() => {
     const getSurahs = async () => {
@@ -44,13 +47,25 @@ const Quran = () => {
 
     return skeletonCards
   }
-  
+
+  function handleToBookmark() {
+    if(bookmarked.length <= 0 || bookmarked.length === 1) {
+      toast({
+        title: "Belum Ada Ayat Yang Di Tandai",
+        variant: "destructive"
+      })
+    }
+  }
+
   return (
     <>
       <div className="flex justify-center mt-5">
         <Badge className="text-lg">#FreePalestine</Badge>
       </div>
       <h1 className="py-12 text-center select-none text-7xl">The Noble Qur'an</h1>
+      <NavLink to={bookmarked.length > 1 ? `/surah/${bookmarked[1]}`: ""}>
+        <Button onClick={handleToBookmark} className="my-7">Ke Terakhir Di Baca <ArrowDownRight className="-rotate-90" /></Button>
+      </NavLink>
       <h2 className="mx-auto text-center text-2xl mt-2 font-semibold border-b-2 max-w-[13rem] border-b-black dark:border-b-slate-100">List Of Surah</h2>
       <main className="grid grid-cols-1 gap-5 my-5 lg:grid-cols-3 md:grid-cols-2">
         {isLoading ? 

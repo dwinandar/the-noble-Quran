@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "./components/Navbar"
+import { Toaster } from "./components/ui/toaster"
 
 function App() {
 
@@ -7,6 +8,7 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
     <>
       <Navbar />
+      <Toaster />
     </>
     </ThemeProvider>
   )

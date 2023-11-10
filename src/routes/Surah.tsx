@@ -1,27 +1,20 @@
 import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom"
 import { API_URL_SURAHS } from "./Quran";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataSurahType } from "@/types/SurahTypes";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { AyatType, DataSurahType, SurahNav } from "@/types/SurahTypes";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface SurahNav {
-  data: {
-    nomor: number;
-    nama: string;
-    namaLatin: string;
-    jumlahAyat: number;
-} | undefined,
-  direction: string
-}
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Surah() {
+  const [bookmarkedAyat, setBookmarkedAyat] = useState<AyatType[]>(JSON.parse(localStorage.getItem('bookmark')) || []);
   const [dataSurah, setDataSurah] = useState<DataSurahType | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [fullPlay, setFullPlay] = useState<boolean>(false)
   const [perAyatPlay, setPerAyatPlay] = useState<boolean>(false)
+  const {toast} = useToast()
   
   const params = useParams<string>()
 
@@ -32,7 +25,7 @@ export default function Surah() {
         const data = await response.json()
         setDataSurah(data);
       } catch (error) {
-        console.log(error);
+        console.log( `error :` + error);
       } finally {
         setIsLoading(false)
       }
@@ -40,7 +33,6 @@ export default function Surah() {
     
     getSurah()
   },[params])
-
 
   const SurahNavigationButton = ({ direction, data }: SurahNav) => {
     if (data) {
@@ -60,21 +52,44 @@ export default function Surah() {
     return <div></div>;
   }
 
-  const handlePlayFull = () => {
-    setFullPlay(true)
+  const addToBookmark = (ayat: AyatType) => {
+    const updatedBookmarkedAyat = [ayat, dataSurah?.data.nomor];
+    const updatedBookmarkedAyah = [ayat];
+    setBookmarkedAyat([]);
+    setBookmarkedAyat(updatedBookmarkedAyah);
+    localStorage.setItem("bookmark", JSON.stringify(updatedBookmarkedAyat))
+    toast({
+      title: "Terakhir Dibaca Di tandai !",
+      description: `Surah ${dataSurah?.data.namaLatin} Ayat ke - ${ayat.nomorAyat}`,
+    })
+  };
+  
+  const removeFromBookmark = (ayat: AyatType) => {
+      const updatedBookmarkedAyat = bookmarkedAyat.filter(item => item.nomorAyat !== ayat.nomorAyat);
+      setBookmarkedAyat(updatedBookmarkedAyat);
+      localStorage.setItem("bookmark", JSON.stringify(updatedBookmarkedAyat));
+      toast({
+        title: "Tanda Terakhir Baca Berhasil Dihapus !",
+      })
+  };
+
+  const isAyatBookmarked = (ayat: AyatType) => {
+    return bookmarkedAyat.some(bookmarked => bookmarked.teksArab === ayat.teksArab);
+  };  
+
+  useEffect(() => {
+    const scrollIntoAyat = () => {
+    const idAyat = bookmarkedAyat[0]?.nomorAyat;
+    const elementidAyat = document.getElementById(`${idAyat}`);
+
+    elementidAyat?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  const handlePauseFull = () => {
-    setFullPlay(false)
+  if(dataSurah?.data.nomor === bookmarkedAyat[1]) {
+    scrollIntoAyat()
   }
 
-  const handlePerAyatPlay = () => {
-    setPerAyatPlay(true)
-  }
-
-  const handlePerAyatPause = () => {
-    setPerAyatPlay(false)
-  }
+  }, [bookmarkedAyat, dataSurah?.data.nomor]);
 
   return (
     <>
@@ -105,8 +120,12 @@ export default function Surah() {
               <audio
                 src={dataSurah?.data.audioFull["05"]} 
                 controls={!perAyatPlay}
-                onPlay={handlePlayFull}
-                onPause={handlePauseFull}
+                onPlay={() => {
+                  setFullPlay(true)
+                }}
+                onPause={() => {
+                  setFullPlay(false)
+                }}
                 className="flex mt-4">
               </audio>
             </section>
@@ -129,8 +148,12 @@ export default function Surah() {
               <audio
                 src={ayat.audio["05"]}
                 controls={!fullPlay}
-                onPlay={handlePerAyatPlay}
-                onPause={handlePerAyatPause}
+                onPlay={() => {
+                  setPerAyatPlay(true)
+                }}
+                onPause={() => {
+                  setPerAyatPlay(false)
+                }}
               />
             </div>
             <CardDescription className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -140,8 +163,21 @@ export default function Surah() {
           <CardContent>
             <h2 className="text-lg">{ayat.teksIndonesia}</h2>
           </CardContent>
-        </Card>
-        ))}
-      </div>}
-    </>
+          <CardFooter className="flex justify-between">
+            <div>
+              {isAyatBookmarked(ayat) ? (
+                <Button className="cursor-pointer" size="icon" onClick={() => removeFromBookmark(ayat)}>
+                  <BookmarkCheck />
+                </Button>
+              ) : (
+                <Button className="cursor-pointer" size="icon" onClick={() => addToBookmark(ayat)}>
+                  <Bookmark />
+                </Button>
+              )}
+            </div>
+          </CardFooter>
+          </Card>
+          ))}
+        </div>}
+      </>
 )}

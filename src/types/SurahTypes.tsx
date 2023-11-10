@@ -63,3 +63,13 @@ export type AyatType =
         };
     };
 }
+
+export interface SurahNav {
+  data: {
+    nomor: number;
+    nama: string;
+    namaLatin: string;
+    jumlahAyat: number;
+} | undefined,
+  direction: string
+}
